@@ -13,33 +13,18 @@ const userName = ref('Гость');
 const userId = ref(null);
 
 onMounted(() => {
-  try {
-    // Проверяем доступность Telegram WebApp API
-    if (window.Telegram && window.Telegram.WebApp) {
-      const tg = window.Telegram.WebApp;
+  console.log('Текущий URL:', window.location.href);
+  console.log('Объект Telegram:', window.Telegram);
 
-      // Инициализируем WebApp
-      tg.ready();
-
-      // Получаем информацию о пользователе
-      const user = tg.initDataUnsafe?.user;
-      if (user) {
-        userName.value = user.first_name || 'Гость';
-        userId.value = user.id;
-        console.log('Информация о пользователе:', user);
-      } else {
-        console.warn('Информация о пользователе недоступна.');
-      }
-
-      // Логируем объект WebApp для проверки
-      console.log('WebApp API доступен:', tg);
-    } else {
-      console.error('Telegram WebApp API недоступен.');
-    }
-  } catch (error) {
-    console.error('Ошибка при инициализации Telegram API:', error);
+  if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    console.log('Telegram WebApp API доступен:', tg);
+  } else {
+    console.error('Telegram WebApp API недоступен.');
   }
 });
+
 
 // Функция для отображения ID пользователя
 const showUserId = () => {
