@@ -8,25 +8,33 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
-// Переменные для данных пользователя
 const userName = ref('Гость');
 const userId = ref(null);
 
-// Подключение Telegram WebApp API
 onMounted(() => {
-  const tg = window.Telegram.WebApp;
+  // Проверяем, доступен ли объект Telegram.WebApp
+  if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
 
-  // Установка данных пользователя
-  if (tg?.initDataUnsafe?.user) {
-    userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
-    userId.value = tg.initDataUnsafe.user.id;
+    // Получение данных пользователя
+    if (tg.initDataUnsafe?.user) {
+      userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
+      userId.value = tg.initDataUnsafe.user.id;
+    }
+  } else {
+    console.error('Telegram WebApp API недоступен. Запустите приложение через Telegram.');
   }
 });
 
 const showUserId = () => {
-  alert(`Ваш ID: ${userId.value}`);
+  if (userId.value) {
+    alert(`Ваш ID: ${userId.value}`);
+  } else {
+    alert('Telegram WebApp API недоступен.');
+  }
 };
 </script>
+
 
 <style>
 .container {
