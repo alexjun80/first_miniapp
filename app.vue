@@ -8,50 +8,38 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
-// Данные пользователя
-const userName = ref('Гость'); // Переменная для имени пользователя
-const userId = ref(null); // Переменная для ID пользователя
+// Переменные для данных пользователя
+const userName = ref('Гость');
+const userId = ref(null);
 
-/*
 onMounted(() => {
-  setTimeout(() => {
-    try {
-      console.log('Доступный объект Telegram:', window.Telegram);
+  try {
+    // Проверяем доступность Telegram WebApp API
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
 
-      if (window.Telegram) {
-        if (window.Telegram.WebApp) {
-          const tg = window.Telegram.WebApp;
-          console.log('Инициализация WebApp API успешна:', tg);
+      // Инициализируем WebApp
+      tg.ready();
 
-          // Проверка наличия данных пользователя
-          if (tg.initDataUnsafe?.user) {
-            console.log('Данные пользователя:', tg.initDataUnsafe.user);
-            userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
-            userId.value = tg.initDataUnsafe.user.id;
-          } else {
-            console.warn('Данные пользователя недоступны.');
-          }
-        } else {
-          console.error('WebApp API отсутствует.');
-        }
+      // Получаем информацию о пользователе
+      const user = tg.initDataUnsafe?.user;
+      if (user) {
+        userName.value = user.first_name || 'Гость';
+        userId.value = user.id;
+        console.log('Информация о пользователе:', user);
       } else {
-        console.error('Объект Telegram недоступен.');
+        console.warn('Информация о пользователе недоступна.');
       }
-    } catch (error) {
-      console.error('Ошибка при инициализации Telegram API:', error);
+
+      // Логируем объект WebApp для проверки
+      console.log('WebApp API доступен:', tg);
+    } else {
+      console.error('Telegram WebApp API недоступен.');
     }
-  }, 300); // Задержка в 300 мс для гарантии получения объекта
+  } catch (error) {
+    console.error('Ошибка при инициализации Telegram API:', error);
+  }
 });
-*/
-
-onMounted(() => {
-  setTimeout(() => {
-    console.log('Объект window.Telegram:', window.Telegram);
-    console.log('Домен текущего приложения:', window.location.hostname);
-  }, 300);
-});
-
-
 
 // Функция для отображения ID пользователя
 const showUserId = () => {
