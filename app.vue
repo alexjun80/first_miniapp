@@ -8,21 +8,28 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
+// Данные пользователя
 const userName = ref('Гость');
 const userId = ref(null);
 
 onMounted(() => {
-  // Проверяем, доступен ли объект Telegram.WebApp
-  if (window.Telegram && window.Telegram.WebApp) {
-    const tg = window.Telegram.WebApp;
+  try {
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
 
-    // Получение данных пользователя
-    if (tg.initDataUnsafe?.user) {
-      userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
-      userId.value = tg.initDataUnsafe.user.id;
+      // Проверяем, доступны ли данные пользователя
+      if (tg.initDataUnsafe?.user) {
+        userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
+        userId.value = tg.initDataUnsafe.user.id;
+      } else {
+        console.warn('Данные пользователя отсутствуют. Проверьте авторизацию.');
+        userName.value = 'Гость';
+      }
+    } else {
+      console.error('Telegram WebApp API недоступен. Запустите приложение через Telegram.');
     }
-  } else {
-    console.error('Telegram WebApp API недоступен. Запустите приложение через Telegram.');
+  } catch (error) {
+    console.error('Ошибка при работе с Telegram WebApp API:', error);
   }
 });
 
@@ -34,7 +41,6 @@ const showUserId = () => {
   }
 };
 </script>
-
 
 <style>
 .container {
