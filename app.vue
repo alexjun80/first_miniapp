@@ -1,38 +1,38 @@
 <template>
   <div class="container">
     <h1 class="welcome-text">Добро пожаловать в Кухню, {{ userName }}!</h1>
-    <button class="welcome-button" @click="showWindowProperties">Показать свойства window</button>
     <pre v-if="windowProperties">{{ windowProperties }}</pre>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 // Переменные для данных
 const userName = ref('Гость');
 const windowProperties = ref(null);
 
-// Функция для вывода всех свойств объекта window
-const showWindowProperties = () => {
+// Отображаем свойства объекта window сразу после загрузки
+onMounted(() => {
   try {
-    // Сериализуем объект window и сохраняем его свойства в формате JSON
-    const properties = Object.keys(window).reduce((acc, key) => {
-      acc[key] = window[key];
-      return acc;
-    }, {});
-    windowProperties.value = JSON.stringify(properties, null, 2);
+    // Собираем ключи объекта window
+    const properties = Object.keys(window).join(', ');
+    windowProperties.value = properties;
 
-    // Выводим свойства в консоль
+    // Логируем свойства в консоль
     console.log('Свойства объекта window:', properties);
 
-    // Также можно вывести всплывающее окно
-    alert('Свойства объекта window записаны в консоль.');
+    // Дополнительная диагностика для Telegram WebApp API
+    if (window.Telegram) {
+      console.log('Объект Telegram доступен:', window.Telegram);
+    } else {
+      console.error('Объект Telegram недоступен.');
+    }
   } catch (error) {
     console.error('Ошибка при получении свойств window:', error);
-    alert('Ошибка при получении свойств window.');
+    windowProperties.value = 'Ошибка при получении свойств window.';
   }
-};
+});
 </script>
 
 <style>
@@ -49,21 +49,6 @@ const showWindowProperties = () => {
   color: #d32f2f;
   font-size: 2rem;
   text-align: center;
-}
-
-.welcome-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 1rem;
-  background-color: #d32f2f;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.welcome-button:hover {
-  background-color: #b71c1c;
 }
 
 pre {
