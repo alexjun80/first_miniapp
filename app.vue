@@ -12,6 +12,7 @@ import { ref, onMounted } from 'vue';
 const userName = ref('Гость'); // Переменная для имени пользователя
 const userId = ref(null); // Переменная для ID пользователя
 
+/*
 onMounted(() => {
   setTimeout(() => {
     try {
@@ -41,6 +42,16 @@ onMounted(() => {
     }
   }, 300); // Задержка в 300 мс для гарантии получения объекта
 });
+*/
+
+onMounted(() => {
+  setTimeout(() => {
+    console.log('Объект window.Telegram:', window.Telegram);
+    console.log('Домен текущего приложения:', window.location.hostname);
+  }, 300);
+});
+
+
 
 // Функция для отображения ID пользователя
 const showUserId = () => {
