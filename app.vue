@@ -16,22 +16,24 @@ onMounted(() => {
   try {
     if (window.Telegram && window.Telegram.WebApp) {
       const tg = window.Telegram.WebApp;
+      console.log('Telegram WebApp API доступен:', tg);
 
-      // Проверяем, доступны ли данные пользователя
+      // Проверка initDataUnsafe
       if (tg.initDataUnsafe?.user) {
+        console.log('Данные пользователя:', tg.initDataUnsafe.user);
         userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
         userId.value = tg.initDataUnsafe.user.id;
       } else {
-        console.warn('Данные пользователя отсутствуют. Проверьте авторизацию.');
-        userName.value = 'Гость';
+        console.warn('Данные пользователя недоступны.');
       }
     } else {
-      console.error('Telegram WebApp API недоступен. Запустите приложение через Telegram.');
+      alert('Telegram WebApp API недоступен. Запустите приложение через Telegram.');
     }
   } catch (error) {
-    console.error('Ошибка при работе с Telegram WebApp API:', error);
+    console.error('Ошибка при инициализации Telegram API:', error);
   }
 });
+
 
 const showUserId = () => {
   if (userId.value) {
