@@ -13,33 +13,44 @@ const userName = ref('Гость');
 const userId = ref(null);
 
 onMounted(() => {
-  try {
-    // Проверяем наличие объекта Telegram и его свойства WebApp
-    if (window.Telegram && window.Telegram.WebApp) {
-      const tg = window.Telegram.WebApp;
-      console.log('Telegram WebApp API доступен:', tg);
+  // Добавляем задержку перед инициализацией Telegram API
+  setTimeout(() => {
+    try {
+      console.log('Проверка объекта Telegram через 1 секунду...');
+      console.log('Текущий URL:', window.location.href);
 
-      // Инициализируем данные пользователя из initData
-      if (tg.initDataUnsafe?.user) {
-        userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
-        userId.value = tg.initDataUnsafe.user.id;
-        console.log('Данные пользователя:', tg.initDataUnsafe.user);
+      if (window.Telegram) {
+        console.log('Объект Telegram:', window.Telegram);
+
+        if (window.Telegram.WebApp) {
+          const tg = window.Telegram.WebApp;
+          console.log('Telegram WebApp API доступен:', tg);
+
+          // Проверка initDataUnsafe
+          if (tg.initDataUnsafe?.user) {
+            console.log('Данные пользователя:', tg.initDataUnsafe.user);
+            userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
+            userId.value = tg.initDataUnsafe.user.id;
+          } else {
+            console.warn('Данные пользователя недоступны.');
+          }
+        } else {
+          console.error('Telegram WebApp API отсутствует.');
+        }
       } else {
-        console.warn('Данные пользователя отсутствуют в initDataUnsafe.');
+        console.error('Объект Telegram недоступен.');
       }
-    } else {
-      console.error('Telegram WebApp API недоступен. Убедитесь, что скрипт https://telegram.org/js/telegram-web-app.js подключен.');
+    } catch (error) {
+      console.error('Ошибка при инициализации Telegram API:', error);
     }
-  } catch (error) {
-    console.error('Ошибка при инициализации Telegram API:', error);
-  }
+  }, 1000); // Задержка 1 секунда
 });
 
 const showUserId = () => {
   if (userId.value) {
     alert(`Ваш ID: ${userId.value}`);
   } else {
-    alert('Не удалось получить ID пользователя.');
+    alert('Telegram WebApp API недоступен.');
   }
 };
 </script>
