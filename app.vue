@@ -1,37 +1,36 @@
 <template>
   <div class="container">
     <h1 class="welcome-text">Добро пожаловать в Кухню, {{ userName }}!</h1>
-    <button class="welcome-button" @click="showUserId">Нажми меня</button>
+    <button class="welcome-button" @click="showWindowProperties">Показать свойства window</button>
+    <pre v-if="windowProperties">{{ windowProperties }}</pre>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 
-// Переменные для данных пользователя
+// Переменные для данных
 const userName = ref('Гость');
-const userId = ref(null);
+const windowProperties = ref(null);
 
-onMounted(() => {
-  console.log('Текущий URL:', window.location.href);
-  console.log('Объект Telegram:', window.Telegram);
+// Функция для вывода всех свойств объекта window
+const showWindowProperties = () => {
+  try {
+    // Сериализуем объект window и сохраняем его свойства в формате JSON
+    const properties = Object.keys(window).reduce((acc, key) => {
+      acc[key] = window[key];
+      return acc;
+    }, {});
+    windowProperties.value = JSON.stringify(properties, null, 2);
 
-  if (window.Telegram && window.Telegram.WebApp) {
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    console.log('Telegram WebApp API доступен:', tg);
-  } else {
-    console.error('Telegram WebApp API недоступен.');
-  }
-});
+    // Выводим свойства в консоль
+    console.log('Свойства объекта window:', properties);
 
-
-// Функция для отображения ID пользователя
-const showUserId = () => {
-  if (userId.value) {
-    alert(`Ваш ID: ${userId.value}`);
-  } else {
-    alert('Telegram WebApp API недоступен.');
+    // Также можно вывести всплывающее окно
+    alert('Свойства объекта window записаны в консоль.');
+  } catch (error) {
+    console.error('Ошибка при получении свойств window:', error);
+    alert('Ошибка при получении свойств window.');
   }
 };
 </script>
@@ -65,5 +64,17 @@ const showUserId = () => {
 
 .welcome-button:hover {
   background-color: #b71c1c;
+}
+
+pre {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  max-height: 300px;
+  overflow: auto;
+  width: 90%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 </style>
