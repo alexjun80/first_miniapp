@@ -20,6 +20,7 @@ onMounted(() => {
     windowProperties.value = properties;
 
     // Логируем свойства в консоль
+    console.log('initData:', window.Telegram?.WebApp?.initData);
     console.log('Свойства объекта window:', properties);
 
     // Дополнительная диагностика для Telegram WebApp API
