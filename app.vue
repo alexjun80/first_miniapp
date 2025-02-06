@@ -12,22 +12,27 @@ import { ref, onMounted } from 'vue';
 const userName = ref('Гость');
 const userId = ref(null);
 
-onMounted(() => {
+nMounted(() => {
   try {
-    if (window.Telegram && window.Telegram.WebApp) {
-      const tg = window.Telegram.WebApp;
-      console.log('Telegram WebApp API доступен:', tg);
+    if (window.Telegram) {
+      console.log('Объект Telegram:', window.Telegram);
+      if (window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        console.log('Telegram WebApp API доступен:', tg);
 
-      // Проверка initDataUnsafe
-      if (tg.initDataUnsafe?.user) {
-        console.log('Данные пользователя:', tg.initDataUnsafe.user);
-        userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
-        userId.value = tg.initDataUnsafe.user.id;
+        // Проверка initDataUnsafe
+        if (tg.initDataUnsafe?.user) {
+          console.log('Данные пользователя:', tg.initDataUnsafe.user);
+          userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
+          userId.value = tg.initDataUnsafe.user.id;
+        } else {
+          console.warn('Данные пользователя недоступны.');
+        }
       } else {
-        console.warn('Данные пользователя недоступны.');
+        console.error('Telegram WebApp API отсутствует.');
       }
     } else {
-      alert('Telegram WebApp API недоступен. Запустите приложение через Telegram.');
+      console.error('Объект Telegram недоступен.');
     }
   } catch (error) {
     console.error('Ошибка при инициализации Telegram API:', error);
