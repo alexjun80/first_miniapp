@@ -1,39 +1,47 @@
 <template>
   <div class="container">
     <h1 class="welcome-text">Добро пожаловать в Кухню, {{ userName }}!</h1>
-    <pre v-if="windowProperties">{{ windowProperties }}</pre>
+    <button class="welcome-button" @click="showUserId">Нажми меня</button>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 
-// Переменные для данных
+// Данные пользователя
 const userName = ref('Гость');
-const windowProperties = ref(null);
+const userId = ref(null);
 
-// Отображаем свойства объекта window сразу после загрузки
 onMounted(() => {
   try {
-    // Собираем ключи объекта window
-    const properties = Object.keys(window).join(', ');
-    windowProperties.value = properties;
+    // Проверяем наличие объекта Telegram и его свойства WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
+      console.log('Telegram WebApp API доступен:', tg);
 
-    // Логируем свойства в консоль
-    console.log('initData:', window.Telegram?.WebApp?.initData);
-    console.log('Свойства объекта window:', properties);
-
-    // Дополнительная диагностика для Telegram WebApp API
-    if (window.Telegram) {
-      console.log('Объект Telegram доступен:', window.Telegram);
+      // Инициализируем данные пользователя из initData
+      if (tg.initDataUnsafe?.user) {
+        userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
+        userId.value = tg.initDataUnsafe.user.id;
+        console.log('Данные пользователя:', tg.initDataUnsafe.user);
+      } else {
+        console.warn('Данные пользователя отсутствуют в initDataUnsafe.');
+      }
     } else {
-      console.error('Объект Telegram недоступен.');
+      console.error('Telegram WebApp API недоступен. Убедитесь, что скрипт https://telegram.org/js/telegram-web-app.js подключен.');
     }
   } catch (error) {
-    console.error('Ошибка при получении свойств window:', error);
-    windowProperties.value = 'Ошибка при получении свойств window.';
+    console.error('Ошибка при инициализации Telegram API:', error);
   }
 });
+
+const showUserId = () => {
+  if (userId.value) {
+    alert(`Ваш ID: ${userId.value}`);
+  } else {
+    alert('Не удалось получить ID пользователя.');
+  }
+};
 </script>
 
 <style>
@@ -52,15 +60,18 @@ onMounted(() => {
   text-align: center;
 }
 
-pre {
+.welcome-button {
   margin-top: 20px;
-  padding: 10px;
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
-  max-height: 300px;
-  overflow: auto;
-  width: 90%;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.welcome-button:hover {
+  background-color: #b71c1c;
 }
 </style>
