@@ -9,37 +9,40 @@
 import { ref, onMounted } from 'vue';
 
 // Данные пользователя
-const userName = ref('Гость');
-const userId = ref(null);
+const userName = ref('Гость'); // Переменная для имени пользователя
+const userId = ref(null); // Переменная для ID пользователя
 
 onMounted(() => {
-  try {
-    if (window.Telegram) {
-      console.log('Объект Telegram:', window.Telegram);
-      if (window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
-        console.log('Telegram WebApp API доступен:', tg);
+  setTimeout(() => {
+    try {
+      console.log('Доступный объект Telegram:', window.Telegram);
 
-        // Проверка initDataUnsafe
-        if (tg.initDataUnsafe?.user) {
-          console.log('Данные пользователя:', tg.initDataUnsafe.user);
-          userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
-          userId.value = tg.initDataUnsafe.user.id;
+      if (window.Telegram) {
+        if (window.Telegram.WebApp) {
+          const tg = window.Telegram.WebApp;
+          console.log('Инициализация WebApp API успешна:', tg);
+
+          // Проверка наличия данных пользователя
+          if (tg.initDataUnsafe?.user) {
+            console.log('Данные пользователя:', tg.initDataUnsafe.user);
+            userName.value = tg.initDataUnsafe.user.first_name || 'Гость';
+            userId.value = tg.initDataUnsafe.user.id;
+          } else {
+            console.warn('Данные пользователя недоступны.');
+          }
         } else {
-          console.warn('Данные пользователя недоступны.');
+          console.error('WebApp API отсутствует.');
         }
       } else {
-        console.error('Telegram WebApp API отсутствует.');
+        console.error('Объект Telegram недоступен.');
       }
-    } else {
-      console.error('Объект Telegram недоступен.');
+    } catch (error) {
+      console.error('Ошибка при инициализации Telegram API:', error);
     }
-  } catch (error) {
-    console.error('Ошибка при инициализации Telegram API:', error);
-  }
+  }, 300); // Задержка в 300 мс для гарантии получения объекта
 });
 
-
+// Функция для отображения ID пользователя
 const showUserId = () => {
   if (userId.value) {
     alert(`Ваш ID: ${userId.value}`);
