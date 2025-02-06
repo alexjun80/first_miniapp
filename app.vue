@@ -12,7 +12,7 @@ import { ref, onMounted } from 'vue';
 const userName = ref('Гость');
 const userId = ref(null);
 
-nMounted(() => {
+Mounted(() => {
   try {
     if (window.Telegram) {
       console.log('Объект Telegram:', window.Telegram);
